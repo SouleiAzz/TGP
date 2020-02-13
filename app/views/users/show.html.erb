@@ -1,0 +1,14 @@
+<h1 class="text-center">User Profile</h1><br>
+<div class="card">
+  <div class="card-header">
+    <%= "@" + @user.first_name + @user.last_name.split(' ').map { |n| n = n[0] }.join  %>
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Name : <em><%= @user.first_name + " " + @user.last_name %></em></li>
+    <li class="list-group-item">Description : <em><%= @user.description %></em></li>
+    <li class="list-group-item">Age : <em><%= @user.age %> years old</em></li>
+    <li class="list-group-item">City : <em><%= link_to @user.city.name, city_path(@id = @user.city.id) %></em></li>
+    <li class="list-group-item">Contact : <em><%= @user.email %></em></li>
+    <li class="list-group-item text-muted">Member since : <em><%= @user.created_at %></em></li>
+  </ul>
+</div>

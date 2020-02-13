@@ -1,0 +1,40 @@
+<h1 class="text-center">Update Comment</h1>
+<div class="text-center mt-5">
+  <%= form_tag(gossip_comment_path(@gossip_id = @gossip.id, @id = @comment.id), method: "patch") do %>
+    <div class="form-group row">
+      <%= label_tag :content, "Comment", class: "col-form-label" %>
+      <%= text_field_tag :content, @comment.content, class: "form-control", required: true %>
+    </div>
+    <div class="form-group row">
+      <div class="col-2 offset-3">
+        <% if @current_user == @comment.user %>
+          <%= submit_tag "Update comment", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+      <div class="col-2 offset-2">
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModalCenter">
+          Delete
+        </button>
+      </div>
+    </div>
+  <% end %>
+</div>
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Delete Comment Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this comment?<br>This action is <strong>irreversible</strong>.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <a href="<%= gossip_comment_path(@gossip_id = @gossip.id, @id = @comment.id) %>" class="btn btn-danger" data-method="DELETE">Delete Comment</a>
+      </div>
+    </div>
+  </div>
+</div>

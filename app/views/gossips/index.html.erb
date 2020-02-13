@@ -1,0 +1,60 @@
+<h1 class="text-center mb-5">Here's the interactive gossip list</h1><br>
+<div class="text-center">
+  <%= link_to 'Create a Gossip', new_gossip_path, class: 'btn btn-primary mb-5' %>
+</div>
+<% i = 1 %>
+<% unless @gossips.empty? %>
+  <div class="card <%= i % 2 == 0 ? "border-light" : "" %>">
+    <% i+=1 %>
+    <div class="row no-gutters">
+      <div class="col-4">
+        <div class="card-body">
+          Author
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="card-body">
+          Gossip Title
+        </div>
+      </div>
+      <div class="col-2 d-flex justify-content-center align-items-center">
+        Comments
+      </div>
+      <div class="col-2 d-flex justify-content-center align-items-center">
+        Likes
+      </div>
+    </div>
+  </div>
+  <% @gossips.each do |g| %>
+    <div class="card <%= i % 2 == 0 ? "border-light" : "" %>">
+      <% i+=1 %>
+      <div class="row no-gutters">
+       <div class="col-4">
+          <div class="card-body">
+            <%= link_to g.user.first_name, user_path(@id = g.user.id) %>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card-body">
+            <%= link_to g.title, gossip_path(@id = g.id) %>
+          </div>
+        </div>
+        <div class="col-2 d-flex justify-content-center align-items-center">
+          Comments: <span class="badge badge-primary badge-pill"><%= g.comments.count %></span>
+        </div>
+        <div class="col-1 d-flex justify-content-center align-items-center">
+          Likes: <span class="badge badge-primary badge-pill"><%= g.likes.count %></span>
+        </div>
+        <div class="col-1 d-flex justify-content-center align-items-center">
+          <% if g.users.include?(@current_user) %>
+            <%= link_to "<i class='material-icons fa' style='color: #d9534f'>favorite</i><i class='material-icons fa' style='color: #d9534f'>favorite_border</i>".html_safe, gossip_like_path(@gossip_id = g.id, @id = 0), method: :delete, class: "like change-icon" %>
+          <% elsif @current_user == false %>
+            <%= link_to "<i class='material-icons fa' style='color: #d9534f'>favorite_border</i><i class='material-icons fa' style='color: #d9534f'>favorite</i>".html_safe, new_session_path, class: "like change-icon" %>
+          <% else %>
+            <%= link_to "<i class='material-icons fa' style='color: #d9534f'>favorite_border</i><i class='material-icons fa' style='color: #d9534f'>favorite</i>".html_safe, gossip_likes_path(@gossip_id = g.id), method: :post, class: "like change-icon" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

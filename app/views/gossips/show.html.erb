@@ -1,0 +1,103 @@
+<h1 class="text-center">Gossip Page</h1><br>
+<div class="card text-center border-light">
+  <div class="card-header">
+  By: <%= link_to @gossip.user.first_name + " " + @gossip.user.last_name, user_path(@id = @gossip.user.id) %> from <%= link_to @gossip.user.city.name, city_path(@id = @gossip.user.city.id) %>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title"><%= @gossip.title %></h5>
+    <p class="card-text"><small><% @gossip.tags.uniq.each do |t| %>
+      #<%= t.title %>
+    <% end %></p>
+    <p class="card-text"><%= @gossip.content %></p>
+    <p class="card-text"><small class="text-muted">Created <%= @gossip.created_at_display %> | Last updated <%= @gossip.updated_at_display %></small></p>
+  </div>
+  <% if @current_user == @gossip.user %>
+    <div class="row mt-5">
+      <div class="col-2 offset-3">
+        <%= link_to "Update Gossip", edit_gossip_path(@id = @gossip.id), class: "btn btn-primary" %>
+      </div>
+      <div class="col-2 offset-2">
+        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModalCenter">
+          Delete
+        </button>
+      </div>
+    </div>
+  <% end %>
+   <h3 class="text-center mt-3">Likes 
+    <span class="badge badge-primary badge-pill"><%= @gossip.likes.count %></span>
+    <span class="change-icon">
+      <% if @gossip.users.include?(@current_user) %>
+        <%= link_to "<i class='material-icons fa' style='color: #d9534f'>favorite</i><i class='material-icons fa' style='color: #d9534f'>favorite_border</i>".html_safe, gossip_like_path(@gossip_id = @gossip.id, @id = 0), method: :delete, class: "like change-icon" %>
+      <% elsif @current_user == false %>
+        <%= link_to "<i class='material-icons fa' style='color: #d9534f'>favorite_border</i><i class='material-icons fa' style='color: #d9534f'>favorite</i>".html_safe, new_session_path, class: "like change-icon" %>
+      <% else %>
+        <%= link_to "<i class='material-icons fa' style='color: #d9534f'>favorite_border</i><i class='material-icons fa' style='color: #d9534f'>favorite</i>".html_safe, gossip_likes_path(@gossip_id = @gossip.id), method: :post, class: "like change-icon" %>
+      <% end %>
+    </span>
+  </h3>
+ <h3 class="mb-3 text-center mt-3">Comments <span class="badge badge-primary badge-pill"><%= @gossip.comments.count %></span></h3>
+  <% if @gossip.comments.count == 0 %>
+    <p>No comment yet, feel free to comment!</p>
+  <% else %>
+    <div style="overflow-x: hidden; overflow-y: scroll; height: 8rem">
+      <% @gossip.comments.each do |c| %>
+        <div class="row">
+          <span class="col-3">
+            <%= link_to c.user.first_name, user_path(@id = c.user.id) %>
+          </span>
+          <span class="col-7 text-left">
+            <%= c.content %>
+          </span>
+          <span class="col-1 d-flex justify-content-center align-items-center">
+            <span class="badge badge-primary badge-pill"><%= c.likes.count %></span>
+            <span class="change-icon">
+              <% if c.users.include?(@current_user) %>
+                <%= link_to "<i class='material-icons fa' style='color: #d9534f'>favorite</i><i class='material-icons fa' style='color: #d9534f'>favorite_border</i>".html_safe, gossip_comment_like_path(@gossip_id = @gossip.id, @comment_id = c.id, @id = 0), method: :delete, class: "like change-icon" %>
+              <% elsif @current_user == false %>
+                <%= link_to "<i class='material-icons fa' style='color: #d9534f'>favorite_border</i><i class='material-icons fa' style='color: #d9534f'>favorite</i>".html_safe, new_session_path, class: "like change-icon" %>
+              <% else %>
+                <%= link_to "<i class='material-icons fa' style='color: #d9534f'>favorite_border</i><i class='material-icons fa' style='color: #d9534f'>favorite</i>".html_safe, gossip_comment_likes_path(@gossip_id = @gossip.id, @comment_id = c.id), method: :post, class: "like change-icon" %>
+              <% end %>
+            </span>
+          </span>
+          <span class="col-1">
+            <%= '<a href='.html_safe + edit_gossip_comment_path(@gossip_id = @gossip.id, @id = c.id) + '><i class="material-icons">more_horiz</i></a>'.html_safe if @current_user == c.user || @current_user == @gossip.user %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+  <div class="text-center mt-5">
+  <%= form_tag(gossip_comments_path(@id = @gossip.id), method: "post") do %>
+    <div class="form-group text-center">
+      <%= label_tag :content, "Comment", class: "col-form-label" %>
+      <%= text_field_tag :content, "", class: "form-control", required: true %>
+    </div>
+    <div class="form-group text-center">
+      <%= submit_tag "Post Comment", class: "btn btn-primary" %>
+    </div>
+    <div class="form-group text-center">
+
+    </div>
+  <% end %>
+</div>
+</div>
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Delete Gosssip Confirmation</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this Gossip?<br>This action is <strong>irreversible</strong>.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <a href="<%= gossip_path(@id = @gossip.id) %>" class="btn btn-danger" data-method="DELETE">Delete Gossip</a>
+      </div>
+    </div>
+  </div>
+</div>
